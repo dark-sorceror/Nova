@@ -1,7 +1,7 @@
 /**
  * \file drive.h
  *
- * Updated - 12/24/2023
+ * Updated - 12/25/2023
  * Last Successful Test - /
  */ 
 
@@ -14,7 +14,8 @@ namespace nova {
             void initialize();
             void resetMotorEncoders();
             void resetIMU();
-            double getAvgEncoderValue();
+            float getAvgEncoderValue();
+            float getAvgVelocity();
             double getIMURotation();
             void run();
         private:

@@ -1,3 +1,10 @@
+/**
+ * \file globals.h
+ *
+ * Updated - 12/24/2023
+ * Last Successful Test - /
+ */
+
 #ifndef __GLOBALS
 #define __GLOBALS
 
@@ -15,13 +22,15 @@ namespace nova {
     extern pros::Motor frontRight;
     extern pros::Motor backBottomRight;
     extern pros::Motor backTopRight;
+    extern pros::Motor backTracking;
 
     extern pros::Motor_Group leftDrive;
     extern pros::Motor_Group rightDrive;
-    extern pros::Motor_Group driveMotors;
+    extern pros::Motor_Group drive;
 
+    extern pros::Motor intake;
+    extern pros::Motor lift;
     extern pros::Motor flywheel;
-    extern pros::Motor arm;
     
     extern pros::Imu IMU;
 

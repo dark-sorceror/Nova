@@ -1,24 +1,25 @@
 /**
- * \file arm.h
+ * \file flywheel.h
  *
  * Updated - 12/24/2023
  * Last Successful Test - /
  */ 
 
-#ifndef __FLYWHEEL
-#define __FLYWHEEL
+#ifndef __INTAKE
+#define __INTAKE
 
 namespace nova {
-    class Flywheel {
+    class Intake {
         public:
             void initialize();
             void spinForward(int power);
-            void spinDuration(int duration);
+            void spinDistance(int revolutions);
             void toggle();
             void run();
         private:
-            bool flywheelActive = false;
+            bool intakeActive = false;
     };
 }
 
 #endif
+

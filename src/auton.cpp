@@ -1,25 +1,15 @@
+/**
+ * \file auton.cpp
+ *
+ * Updated - 1/5/2024
+ * Last Successful Test - 1/5/2924
+ */ 
+
+#include "PID.hpp"
+#include "globals.h"
 #include "auton.h"
-#include "main.h"
-#include "pros/link.h"
 #include "pros/rtos.hpp"
 #include <cmath>
-
-/*
-float startPos = left_drive.getCurrentPosition();
-    float prevError = goalPos - startPos;
-    float integral = 0;
-    
-    float error = goalPos - getCurrentPosition();
-    
-    float pid = error * kP;
-    motor
-
-    // move motors with 'pid' amount
-    prevError = error;
-
-    wait(15, msec);
-    // stop motors
-*/
 
 /*
 1800 ticks/rev with 36:1 gears red
@@ -30,137 +20,179 @@ float startPos = left_drive.getCurrentPosition();
 omni wheel circumference =  2pi 3.25 inch = 20.42 inches / rev
 */
 
-bool wingsActivated = false;
-double prevIMUAngle = 0;
+nova::Auton::Auton(Drive drive, Intake intake, Lift lift, Flywheel flywheel, Wings wings):
+    drive(drive),
+    intake(intake),
+    lift(lift),
+    flywheel(flywheel),
+    wings(wings)
+{};
 
-void toggleWings() {
-    if (wingsActivated) {
-        piston_1.set_value(0);
-        piston_2.set_value(0);
+void nova::Auton::translate(float dist) {
+    this -> drive.resetMotorEncoders();
+    PID drivePID = PID(0, 0.6, 0.0, 1.0, 250, 50, 300, 5000);
 
-        wingsActivated = false;
-    } else {
-        piston_1.set_value(100);
-        piston_2.set_value(100);
+    float targetPosition = dist * 47.88245103; // dist * 300/2pir
+    float timeSpentStalled = 0;
+    const float MIN_STALL_POWER = 30, MIN_STALL_VELOCITY = 4, MIN_STALL_TIME = 400;
 
-        wingsActivated = true;
+    while (!(drivePID.isSettled())) {
+        float error = targetPosition - this -> drive.getAvgEncoderValue();
+        float power = drivePID.compute(error);
+
+        nova::drive = power;
+        pros::delay(10);
+
+        if (power > MIN_STALL_POWER && this -> drive.getAvgVelocity() < MIN_STALL_VELOCITY) {
+            timeSpentStalled += 10;
+        } else {
+            timeSpentStalled = 0;
+        }
+
+        if (timeSpentStalled > MIN_STALL_TIME) break;
     }
+
+    nova::drive.brake();
+    drivePID.reset();
 }
 
-double averageDriveEncoderValue() {
-    return fabs(leftDrive[0].get_position()) + fabs(leftDrive[1].get_position()) + fabs(leftDrive[2].get_position()) + fabs(rightDrive[0].get_position()) + fabs(rightDrive[1].get_position()) + fabs(rightDrive[2].get_position());
-}
+void nova::Auton::rotate(float angle) {
+    float targetPosition = this -> drive.getIMURotation() + angle;
+    PID turnPID = PID(0, 3.0, 0.0, 1.0, 100, 5, 400, 3000);
 
-void resetDriveEncoders() {
-    leftDrive.tare_position();
-    rightDrive.tare_position();
-}
+    while (!(turnPID.isSettled())) {
+        float error = targetPosition - this -> drive.getIMURotation();
+        float power = turnPID.compute(error);
 
-void setDrive(int left, int right) {
-    leftDrive[0] = -left;
-    leftDrive[1] = -left; 
-    leftDrive[2] = -left;
-    rightDrive[0] = right;
-    rightDrive[1] = right;
-    rightDrive[2] = right;
-}
+        nova::leftDrive = power;
+        nova::rightDrive = -power;
 
-void translate(int units, int voltage) {
-    int direction = abs(units) / units;
-
-    resetDriveEncoders();
-
-    while(averageDriveEncoderValue() < abs(units)) {
-        setDrive(0.8 * voltage * direction, 0.8 * voltage * direction);
         pros::delay(10);
     }
 
-    setDrive(-10 * direction, -10 * direction);
-    pros::delay(50);
-
-    setDrive(0, 0);
+    nova::drive.brake();
+    turnPID.reset();
 }
+/*
+void nova::Auton::drift(float angle) {
+    float targetPosition = this -> drive.getIMURotation() + angle;
 
-void rotate(int degrees, int voltage) {
-    int direction = abs(degrees) / degrees;
+    while (!(this -> swingPID.isSettled())) {
+        float error = targetPosition - this -> drive.getIMURotation();
+        float power = this -> swingPID.compute(error);
 
-    setDrive(0.5 *-voltage * direction, 0.5 * voltage * direction);
-    while ((fabs(imu.get_rotation()) - fabs(prevIMUAngle)) < (abs(degrees)-50)) {
+        if (angle > 0) nova::leftDrive = power;
+        else nova::rightDrive = power;
+
         pros::delay(10);
     }
 
-    pros::delay(100);
-
-    if (fabs(fabs(imu.get_rotation()) - fabs(prevIMUAngle)) < abs(degrees)) {
-        setDrive(0.5 * voltage * direction, 0.5 * -voltage * direction);
-
-        while (fabs(fabs(imu.get_rotation()) - fabs(prevIMUAngle)) > abs(degrees)) {
-            pros::delay(10);
-        }
-    } else if (fabs(fabs(imu.get_rotation()) - fabs(prevIMUAngle)) > abs(degrees)) {
-        setDrive(0.5 * -voltage * direction, 0.5 * voltage * direction);
-
-        while ((fabs(imu.get_rotation()) - fabs(prevIMUAngle)) < abs(degrees)) {
-            pros::delay(10);
-        }
-    }
-
-    setDrive(0, 0);
-
-    prevIMUAngle = imu.get_rotation();
+    nova::drive.brake();
+    this -> swingPID.reset();
+}
+*/
+void nova::Auton::closeSide() {
+    this -> translate(50);
+    this -> rotate(90);
+    intake.spinDistance(4); // output
+    this -> rotate(160);
+    this -> translate(32);
+    intake.spinDistance(4); // input
+    this -> rotate(-195);
+    intake.spinDistance(4); //output
+    this -> rotate(-98);
+    intake.spinDistance(4); // input
+    this -> translate(15);
+    this -> rotate(-50);
+    this -> translate(-35);
+    this -> rotate(180);
+    intake.spinDistance(4); // output
+    this -> translate(15);
+    this -> rotate(-50);
+    this -> translate(-46);
+    this -> rotate(50);
+    this -> translate(-6);
+    wings.open();
 }
 
-void autonClose() {
-    toggleWings();
-    pros::delay(500);
-    translate(2500, 127);
-    pros::delay(1000);
-    rotate(45, 127);
-    pros::delay(1000);
-    translate(4500, 127);
-    pros::delay(1000);
-    toggleWings();
-    translate(-1500, 127);
-    pros::delay(1000);
-    arm.move_absolute(-400, 127);
-    pros::delay(500);
-    translate(3000, 127);
-    pros::delay(1000);
-    translate(-1500, 127);
-    pros::delay(500);
-    arm.move_absolute(400, 127);
-    translate(4000, 127);
-    pros::delay(1000);
-    translate(-2000, 127);
+void nova::Auton::farSide() {
+    this->translate(60);
+    intake.spinDistance(8);
+    this -> translate(-12);
+    //pros::delay(2000);
 }
 
-void autonFar() {
-    translate(14500, 127); // offset by like 1000 comment this if get cornoer
-    pros::delay(1000);
-    rotate(80, 127); // comment from here if coernr to down there
-    pros::delay(500);
-    arm.move_absolute(-400, 127);
-    translate(6750, 127);
-    pros::delay(500);
-    translate(-2000, 127);
-    pros::delay(500);
-    arm.move_absolute(400, 127);
+void nova::Auton::skills() {
+    this -> translate(18);
+    this -> rotate(90);
+    this -> translate(-30);
+    wings.open();
+    lift.liftUp();
+    flywheel.spinDuration(30);
+    pros::delay(30000);
+    lift.liftDown();
+    this -> translate(7);
+    wings.close();
+    //flywheel.spinDuration(35);
+    this -> rotate(-135);
+    this -> translate(-32);
+    this -> rotate(-45);
+    this -> translate(-85);
+    this -> rotate(-45);
+    this -> translate(-30);
+    this -> translate(10);
+    this -> translate(-15);
+    this -> translate(8);
+    this -> rotate(-95);
+    this -> translate(-45);
+    this -> rotate(90);
+    this -> translate(-40);
+    this -> rotate(100);
+    wings.open();
+    this -> translate(-35);
+    this -> translate(7);
+    this -> translate(-12);
+    this -> translate(7);
+    this -> rotate(20);
+    this -> translate(35);
+    this -> translate(-35);
+    this -> translate(5);
+    wings.close();
 }
- 
-void autonSkills() {
-    translate(4500, 127);
-    pros::delay(1000);
-    rotate(-55, 127);
-    pros::delay(1000);
-    translate(-4500, 127);
-    arm.move_absolute(-450, 127);
-    flywheel.move_absolute(-1000000, 500);
-    pros::delay(40000);
-    toggleWings();
-    translate(20000, 127);
-    pros::delay(1000);
-    translate(-3000, 127);
 
+/*
 
+float nova::Auton::getLineLength(sLine line) {
+    float x = line.p2.x - line.p1.x;
+    float y = line.p2.y - line.p1.y;
+
+    return sqrt(x * x + y * y);
 }
 
+float nova::Auton::getLineAngle(sLine line) {
+    return atan2(line.p2.x - line.p1.x, line.p2.y - line.p1.y);
+}
+
+float nova::Auton::nearAngle(float angle, float reference) {
+    return round((reference - angle) / (2 * 3.14159265)) * (2 * 3.14159265) + angle;
+}
+
+void nova::Auton::moveTo(float x, float y, float xs, float ys, int power) {
+    this -> target.x = x;
+    this -> target.y = y;
+
+    sLine path;
+    
+    path.p1.x = xs;
+    path.p1.y = ys;
+    path.p2.x = x;
+    path.p2.y = y;
+
+    float length = this -> getLineLength(path);
+    float angle = this -> getLineAngle(path);
+    float anglePID = this -> nearAngle(angle - (power < 0 ? 3.14159265 : 0), this -> botPosition.angle);
+
+    sVector currentPosVector;
+    sPolar currentPosPolar;
+}
+*/

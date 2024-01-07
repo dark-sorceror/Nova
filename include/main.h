@@ -21,10 +21,15 @@
 #include "api.h"
 
 #include "globals.h"
-#include "/components/drive.h"
-#include "/components/flywheel.h"
-#include "/components/arm.h"
-#include "/components/wings.h"
+#include "components/drive.h"
+#include "components/intake.h"
+#include "components/lift.h"
+#include "components/wings.h"
+#include "components/flywheel.h"
+#include "PID.hpp"
+#include "auton.h"
+#include "odometry.h"
+#include "selector.h"
 
 using namespace pros;
 
@@ -46,6 +51,7 @@ extern "C" {
 
 #include <iostream>
 #include <string>
+#include <math.h>
 
 #endif
 

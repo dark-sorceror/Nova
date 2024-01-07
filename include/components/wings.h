@@ -1,7 +1,7 @@
 /**
  * \file wings.h
  *
- * Updated - 12/24/2023
+ * Updated - 12/25/2023
  * Last Successful Test - /
  */ 
 
@@ -11,6 +11,8 @@
 namespace nova {
     class Wings {
         public:
+            int airRemaining = 100;
+
             void open();
             void close();
             void toggle();

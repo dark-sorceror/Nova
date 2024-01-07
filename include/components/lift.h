@@ -5,18 +5,20 @@
  * Last Successful Test - /
  */ 
 
-#ifndef __ARM
-#define __ARM
+#ifndef __LIFT
+#define __LIFT
 
 namespace nova {
-    class Arm {
+    class Lift {
         public:
             void initialize();
             void spinForward(int power);
+            void liftUp();
+            void liftDown();
             void toggle();
             void run();
         private:
-            bool armActive = false;
+            bool liftActive = false;
     };
 }
 

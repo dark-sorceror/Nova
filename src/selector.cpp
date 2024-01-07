@@ -1,121 +1,59 @@
 // LittlevGL Nova 12/9/2023
 // tabview consisting of tabs --> button
 
+#include "display/lv_core/lv_obj.h"
+#include "display/lv_misc/lv_color.h"
 #include "main.h"
 #include "selector.h"
 
 namespace selector {
-    #define DEFAULT 1 //!important
-    #define AUTONS "Close Side", "Far Side"
-
-    const char * btnmMap[] = {AUTONS};
-
     int auton;
-    int autonCount;
 
-    lv_obj_t * tabView;
-    lv_obj_t * blueAllianceButton;
-    lv_obj_t * redAllianceButton;
+    static lv_res_t btn_click_action(lv_obj_t * btn) {
+        uint8_t id = lv_obj_get_free_num(btn);
 
-    static lv_res_t initBlueAlliance(lv_obj_t * btnm, const char * txt) {
-        for (int i = 0; i < autonCount; i++) {
-            if (strcmp(txt, btnmMap[i]) == 0) {
-                auton = i + 1;
-            }
-        }
+        auton = id;
 
-        return LV_RES_OK;
+        return LV_RES_OK; /*Return OK if the button is not deleted*/
     }
 
-    static lv_res_t initRedAlliance(lv_obj_t * btnm, const char * txt) {
-        for (int i = 0; i < autonCount; i++) {
-            if (strcmp(txt, btnmMap[i]) == 0) {
-                auton = -(i + 1);
-            }
-        }
+    void init() {
+        static lv_style_t buttonStyle;
+        lv_style_copy(&buttonStyle, &lv_style_plain);
+        buttonStyle.body.main_color = LV_COLOR_BLACK;
+        buttonStyle.body.border.color = LV_COLOR_BLACK;
+        buttonStyle.body.border.width = 2;
+        buttonStyle.text.color = LV_COLOR_GREEN;
 
-        return LV_RES_OK;
-    }
+        lv_obj_t * label = lv_label_create(lv_scr_act(), NULL);
+        lv_label_set_text(label, "Auton Selection");
+        lv_obj_align(label, NULL, LV_ALIGN_IN_TOP_MID, 0, 5);
 
-    int tabWatcher() {
-        int activeTab = lv_tabview_get_tab_act(tabView);
+        lv_obj_t * farSide = lv_btn_create(lv_scr_act(), NULL);
+        lv_cont_set_fit(farSide, true, true);
+        lv_obj_align(farSide, label, LV_ALIGN_OUT_TOP_LEFT, 0, 100);
+        lv_obj_set_free_num(farSide, 1);   /*Set a unique number for the button*/
+        lv_btn_set_action(farSide, LV_BTN_ACTION_CLICK, btn_click_action);
+        label = lv_label_create(farSide, NULL);
+        lv_label_set_text(label, "Far Side");
+        lv_btn_set_style(farSide, LV_BTNM_STYLE_BG, &buttonStyle);
 
-        while (1) {
-            int currentTab = lv_tabview_get_tab_act(tabView);
+        lv_obj_t * closeSide = lv_btn_create(lv_scr_act(), NULL);
+        lv_cont_set_fit(closeSide, true, true);
+        lv_obj_align(closeSide, label, LV_ALIGN_OUT_TOP_MID, 0, 100);
+        lv_obj_set_free_num(closeSide, 2);   /*Set a unique number for the button*/
+        lv_btn_set_action(closeSide, LV_BTN_ACTION_CLICK, btn_click_action);
+        label = lv_label_create(closeSide, NULL);
+        lv_label_set_text(label, "Close Side");
+        lv_btn_set_style(closeSide, LV_BTNM_STYLE_BG, &buttonStyle);
 
-            if (currentTab != activeTab) {
-                activeTab = currentTab;
-
-                if (activeTab == 0) {
-                    if (auton == 0) auton = 1;
-                    auton = abs(auton);
-                    lv_btnm_set_toggle(redAllianceButton, true, abs(auton) - 1);
-                } else if (activeTab == 1) {
-                    if (auton == 0) auton = -1;
-                    auton = -abs(auton);
-                    lv_btnm_set_toggle(blueAllianceButton, true, abs(auton) - 1);
-                } else {
-                    auton = 0;
-                }
-            }
-
-            pros::delay(20);
-        }
-    }
-
-    void init(const char **autons) {
-        int i = 0;
-        do {
-            memcpy(&btnmMap[i], &autons[i], sizeof(&autons));
-            i++;
-        } while(strcmp(autons[i], "") != 0);
-
-        autonCount = i;
-        auton = DEFAULT;
-
-        static lv_style_t tabViewStyle;
-        lv_style_copy(&tabViewStyle, &lv_style_plain);
-        tabViewStyle.body.main_color = LV_COLOR_BLACK;
-        tabViewStyle.text.color = LV_COLOR_WHITE;
-        tabViewStyle.body.border.color = LV_COLOR_WHITE;
-        tabViewStyle.body.border.width = 2;
-
-        lv_obj_t * tabView = lv_tabview_create(lv_scr_act(), NULL);
-        lv_tabview_set_style(tabView, LV_TABVIEW_STYLE_BG, &tabViewStyle);
-
-        lv_obj_t * blueAllianceTab = lv_tabview_add_tab(tabView, "Blue");
-        lv_obj_t * redAllianceTab = lv_tabview_add_tab(tabView, "Red");
-
-        static lv_style_t blueButtonStyle;
-        lv_style_copy(&blueButtonStyle, &lv_style_plain);
-        blueButtonStyle.body.main_color = LV_COLOR_BLACK;
-        blueButtonStyle.body.border.color = LV_COLOR_BLUE;
-        blueButtonStyle.body.border.width = 2;
-        blueButtonStyle.text.color = LV_COLOR_BLUE;
-
-        static lv_style_t redButtonStyle;
-        lv_style_copy(&redButtonStyle, &lv_style_plain);
-        redButtonStyle.body.main_color = LV_COLOR_BLACK;
-        redButtonStyle.body.border.color = LV_COLOR_RED;
-        redButtonStyle.body.border.width = 2;
-        redButtonStyle.text.color = LV_COLOR_RED;
-
-        lv_obj_t * blueAllianceButtons = lv_btnm_create(blueAllianceTab, NULL);
-        lv_btnm_set_map(blueAllianceButtons, btnmMap);
-        lv_btnm_set_action(blueAllianceButtons, initBlueAlliance);
-        lv_obj_set_size(blueAllianceButtons, 450, 50);
-        lv_obj_set_pos(blueAllianceButtons, 0, 100);
-        lv_obj_align(blueAllianceButtons, NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_btnm_set_style(blueAllianceButtons, LV_BTNM_STYLE_BG, &blueButtonStyle);
-
-        lv_obj_t * redAllianceButtons = lv_btnm_create(redAllianceTab, NULL);
-        lv_btnm_set_map(redAllianceButtons, btnmMap);
-        lv_btnm_set_action(redAllianceButtons, initRedAlliance);
-        lv_obj_set_size(redAllianceButtons, 450, 50);
-        lv_obj_set_pos(redAllianceButtons, 0, 100);
-        lv_obj_align(redAllianceButtons, NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_btnm_set_style(redAllianceButtons, LV_BTNM_STYLE_BG, &redButtonStyle);
-
-        pros::Task tabWatcher_task(tabWatcher);
+        lv_obj_t * skills = lv_btn_create(lv_scr_act(), NULL);
+        lv_cont_set_fit(skills, true, true);
+        lv_obj_align(skills, label, LV_ALIGN_OUT_TOP_RIGHT, 20, 100);
+        lv_obj_set_free_num(skills, 3);   /*Set a unique number for the button*/
+        lv_btn_set_action(skills, LV_BTN_ACTION_CLICK, btn_click_action);
+        label = lv_label_create(skills, NULL);
+        lv_label_set_text(label, "Skills");
+        lv_btn_set_style(skills, LV_BTNM_STYLE_BG, &buttonStyle);
     }
 }

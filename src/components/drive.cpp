@@ -1,7 +1,7 @@
 /**
  * \file drive.cpp
  *
- * Updated - 12/24/2023
+ * Updated - 12/25/2023
  * Last Successful Test - /
  */ 
 
@@ -29,8 +29,12 @@ void nova::Drive::resetIMU() {
     nova::IMU.reset();
 }
 
-double nova::Drive::getAvgEncoderValue() {
-    return (nova::frontLeft.get_position() + nova::backBottomLeft.get_position() + nova::backTopLeft.get_position() + nova::frontRight.get_position() + nova::backBottomRight.get_position() + nova::backTopRight.get_position());
+float nova::Drive::getAvgEncoderValue() {
+    return (nova::frontLeft.get_position() + nova::backBottomLeft.get_position() + nova::backTopLeft.get_position() + nova::frontRight.get_position() + nova::backBottomRight.get_position() + nova::backTopRight.get_position())/6;
+}
+
+float nova::Drive::getAvgVelocity() {
+    return (nova::frontLeft.get_actual_velocity() + nova::backBottomLeft.get_actual_velocity() + nova::backTopLeft.get_actual_velocity() + nova::frontRight.get_actual_velocity() + nova::backBottomRight.get_actual_velocity() + nova::backTopRight.get_actual_velocity())/6;
 }
 
 double nova::Drive::getIMURotation() {
