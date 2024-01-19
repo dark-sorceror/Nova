@@ -1,8 +1,8 @@
 /**
  * \file auton.h
  *
- * Updated - 12/25/2023
- * Last Successful Test - /
+ * Updated - 1/10/2024
+ * Last Successful Test - 1/10/2024
  */ 
 
 #ifndef __AUTON
@@ -18,72 +18,48 @@
 namespace nova {
     class Auton {
         public: 
+            Auton(Drive drive, Intake intake, Lift lift, Flywheel flywheel, Wings wings);
             
+            PID drivePID = PID(
+                0, 
+                1.5, 
+                0.0, 
+                8.5, 
+                250, 
+                50, 
+                175, 
+                5000
+            );
 
-        /*
+            PID turnPID = PID(
+                0, 
+                4.0, 
+                0.0, 
+                28.0, 
+                100, 
+                5, 
+                75, 
+                3000
+            );
+
+            float getAuton();
+
+            void farSideAWP();
+            void farSide();
+            void closeSideAWP();
+            void closeSide();
+            void skills();
         private:
-            const float WHEEL_DIAMETER = 3.25; // inches
-            const float LEFT_SIDE_RADIUS = 4.724;
-            const float RIGHT_SIDE_RADIUS = 4.724;
-            const float BACK_SIDE_RADIUS = 4;
-            const float TICKS_PER_ROTATION = 300;
-            const float WHEEL_CIRCUMFERENCE = (WHEEL_DIAMETER * 3.14159265) / TICKS_PER_ROTATION;
-
-            typedef struct _pos {
-                float angle;
-                float y;
-                float x;
-                int leftLst;
-                int rightLst;
-                int backLst;
-            } sPos;
-
-            typedef struct _vector {
-                float y;
-                float x;
-            } sVector;
-
-            typedef struct _polar {
-                float magnitude;
-                float angle;
-            } sPolar;
-
-            typedef struct _line {
-                sVector p1;
-                sVector p2;
-            } sLine;
-
-            sPos botPosition;
-            sVector target;
-
-            float getAvgLeftEncoderValue(); //replace with real encoder
-            float getAvgRightEncoderValue();
-            float getTrackingEncoderValue();
-
-            void trackPosition(int left, int right, int back, sPos& position);
-            void resetPosition(sPos& position);
-
-            void moveTo(float x, float y, float xs, float ys);
-            
-            pros::Task updateTrackPosition();
-        */
-
             Drive drive;
             Intake intake;
             Lift lift;
             Flywheel flywheel;
             Wings wings;
 
-            Auton(Drive drive, Intake intake, Lift lift, Flywheel flywheel, Wings wings);
-
             //void trackPosition(int left, int right);
             void translate(float dist);
             void rotate(float angle);
-            void drift(float angle);
-
-            void closeSide();
-            void farSide();
-            void skills();
+            void swing(float angle);
     };
 }
 

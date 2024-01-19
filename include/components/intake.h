@@ -1,8 +1,8 @@
 /**
- * \file flywheel.h
+ * \file intake.h
  *
- * Updated - 12/24/2023
- * Last Successful Test - /
+ * Updated - 1/13/2024
+ * Last Successful Test - 1/13/2024
  */ 
 
 #ifndef __INTAKE
@@ -12,9 +12,7 @@ namespace nova {
     class Intake {
         public:
             void initialize();
-            void spinForward(int power);
-            void spinDistance(int revolutions);
-            void toggle();
+            void spinRevolutions(int revolutions);
             void run();
         private:
             bool intakeActive = false;

@@ -1,19 +1,21 @@
 /**
  * \file drive.cpp
  *
- * Updated - 12/25/2023
- * Last Successful Test - /
+ * Updated - 1/10/2024
+ * Last Successful Test - 1/10/2024
  */ 
 
+#include "globals.h"
 #include "main.h"
+#include "pros/motors.h"
 
 void nova::Drive::initialize() {
-    nova::frontLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-    nova::backBottomLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-    nova::backTopLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-    nova::frontRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-    nova::backBottomRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-    nova::backTopRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+    nova::frontLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::backBottomLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::backTopLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::frontRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::backBottomRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::backTopRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 }
 
 void nova::Drive::resetMotorEncoders() {
@@ -30,6 +32,12 @@ void nova::Drive::resetIMU() {
 }
 
 float nova::Drive::getAvgEncoderValue() {
+    //lcd::print(5, "%f", nova::frontLeft.get_position());
+    //lcd::print(6, "%f", nova::backTopLeft.get_position());
+    //lcd::print(7, "%f", nova::backBottomLeft.get_position());
+    lcd::print(5, "%f", nova::frontRight.get_position());
+    lcd::print(6, "%f", nova::backTopRight.get_position());
+    lcd::print(7, "%f", nova::backBottomRight.get_position());
     return (nova::frontLeft.get_position() + nova::backBottomLeft.get_position() + nova::backTopLeft.get_position() + nova::frontRight.get_position() + nova::backBottomRight.get_position() + nova::backTopRight.get_position())/6;
 }
 
@@ -55,4 +63,6 @@ void nova::Drive::run() {
     nova::frontRight = y - x;
     nova::backBottomRight = y - x;
     nova::backTopRight = y - x;
+
+    //master.print(0, 0, "%f", IMU.get_rotation()); TESTING AUTON 
 }

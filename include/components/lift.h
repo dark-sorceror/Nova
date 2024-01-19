@@ -1,8 +1,8 @@
 /**
- * \file arm.h
+ * \file lift.h
  *
- * Updated - 12/24/2023
- * Last Successful Test - /
+ * Updated - 1/13/2024
+ * Last Successful Test - 1/13/2024
  */ 
 
 #ifndef __LIFT
@@ -12,10 +12,8 @@ namespace nova {
     class Lift {
         public:
             void initialize();
-            void spinForward(int power);
             void liftUp();
             void liftDown();
-            void toggle();
             void run();
         private:
             bool liftActive = false;

@@ -1,8 +1,8 @@
 /**
  * \file globals.cpp
  *
- * Updated - 12/24/2023
- * Last Successful Test - /
+ * Updated - 1/13/2024
+ * Last Successful Test - 1/10/2024
  */ 
 
 #include "api.h"
@@ -17,7 +17,7 @@ namespace nova {
     pros::Motor frontLeft (1, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
     pros::Motor backBottomLeft (2, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
     pros::Motor backTopLeft (11, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
-    pros::Motor frontRight (9, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
+    pros::Motor frontRight (3, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
     pros::Motor backBottomRight (10, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
     pros::Motor backTopRight (20, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
     //pros::Motor backTracking (20, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
@@ -30,8 +30,9 @@ namespace nova {
     pros::Motor lift (16, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_COUNTS);
     pros::Motor flywheel (8, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
 
+    pros::ADIPotentiometer potentiometer ('B');
     pros::ADIDigitalOut leftWing ('A', LOW);
-    pros::ADIDigitalOut rightWing ('H', LOW);
+    pros::ADIDigitalOut rightWing ('E', LOW);
 
     pros::Imu IMU (19);
 }

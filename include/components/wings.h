@@ -1,8 +1,8 @@
 /**
  * \file wings.h
  *
- * Updated - 12/25/2023
- * Last Successful Test - /
+ * Updated - 1/13/2024
+ * Last Successful Test - 1/10/2024
  */ 
 
 #ifndef __WINGS
@@ -11,13 +11,19 @@
 namespace nova {
     class Wings {
         public:
-            int airRemaining = 100;
-
             void open();
+            void openLeft();
+            void openRight();
+
             void close();
-            void toggle();
+            void closeLeft();
+            void closeRight();
+
             void run();
         private:
+            void toggle();
+
+            int airRemaining;
             bool wingsActive = false;
     };
 }

@@ -1,19 +1,15 @@
 /**
- * \file arm.cpp
+ * \file lift.cpp
  *
- * Updated - 12/24/2023
- * Last Successful Test - /
+ * Updated - 1/13/2024
+ * Last Successful Test - 1/13/2024
  */ 
 
 #include "main.h"
 
 void nova::Lift::initialize() {
-    nova::lift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    nova::lift.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
     nova::lift.tare_position();
-}
-
-void nova::Lift::spinForward(int power) {
-    nova::lift = power;
 }
 
 void nova::Lift::liftUp() {
@@ -22,11 +18,6 @@ void nova::Lift::liftUp() {
 
 void nova::Lift::liftDown() {
     nova::lift.move_absolute(-1800, 100);
-}
-
-void nova::Lift::toggle() {
-    if (!this -> liftActive) this -> spinForward(127); else this -> spinForward(0);
-    this -> liftActive = !this -> liftActive;
 }
 
 void nova::Lift::run() {

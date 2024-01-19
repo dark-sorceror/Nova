@@ -1,8 +1,8 @@
 /**
- * \file arm.h
+ * \file flywheel.h
  *
- * Updated - 12/24/2023
- * Last Successful Test - /
+ * Updated - 1/6/2024
+ * Last Successful Test - 1/6/2024
  */ 
 
 #ifndef __FLYWHEEL
@@ -12,9 +12,7 @@ namespace nova {
     class Flywheel {
         public:
             void initialize();
-            void spinForward(int power);
             void spinDuration(int duration);
-            void toggle();
             void run();
         private:
             bool flywheelActive = false;

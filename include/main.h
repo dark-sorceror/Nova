@@ -8,8 +8,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Updated - 12/24/2023
- * Last Successful Test - /
+ * Updated - 1/10/2024
+ * Last Successful Test - 1/10/2024
  */
 
 #ifndef _PROS_MAIN_H_
@@ -28,8 +28,6 @@
 #include "components/flywheel.h"
 #include "PID.hpp"
 #include "auton.h"
-#include "odometry.h"
-#include "selector.h"
 
 using namespace pros;
 
@@ -52,6 +50,9 @@ extern "C" {
 #include <iostream>
 #include <string>
 #include <math.h>
+#include <algorithm>
+#include <map>
+#include <string>
 
 #endif
 

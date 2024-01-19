@@ -1,8 +1,8 @@
 /**
  * \file PID.cpp
  *
- * Updated - 1/2/2024
- * Last Successful Test - 1/2/2024
+ * Updated - 1/13/2024
+ * Last Successful Test - 1/10/2024
  */ 
 
 #include "main.h"
@@ -55,14 +55,16 @@ float nova::PID::compute(float error) {
     if ((error > 0 && prevError < 0) || (error < 0 && prevError > 0)) {
         accumulatedError = 0;
     }
-    
+
+    /*
     futureError = (error - prevError);
 
     if (fabs(futureError) > fabs(acceleration + prevDeriv) && prevDeriv != 0) {
         futureError = acceleration + prevDeriv;
     }
+    */
 
-    output = kP * error + kI * accumulatedError + kD * futureError;
+    output = kP * error + kI * accumulatedError + kD * (error - prevError);
 
     prevError = error;
     acceleration = futureError - prevDeriv;
@@ -128,97 +130,3 @@ void nova::PID::setExitConditionConstants (
     this -> settleTime = settleTime;
     this -> timeout = timeout;
 }
-
-/*
-nova::PID::PID (
-        float error,
-        float kP, 
-        float kI,
-        float kD,
-        float maxCumulativeError,
-        float loopTime,
-        bool holdIntegralAtEnd
-    ):
-
-    error(error),
-    kP(kP),
-    kI(kI),
-    kD(kD),
-    maxCumulativeError(maxCumulativeError),
-    loopTime(loopTime),
-    holdIntegralAtEnd(holdIntegralAtEnd)
-{};
-
-nova::PID::PID (
-        float error,
-        float kP,
-        float kI,
-        float kD,
-        float maxCumulativeError,
-        float minSettleError,
-        float minSettleTime,
-        float timeout,
-        float loopTime,
-        bool holdIntegralAtEnd
-    ):
-
-    error(error),
-    kP(kP),
-    kI(kI),
-    kD(kD),
-    maxCumulativeError(maxCumulativeError),
-    minSettleError(minSettleError),
-    minSettleTime(minSettleTime),
-    timeout(timeout),
-    loopTime(loopTime),
-    holdIntegralAtEnd(holdIntegralAtEnd)
-{};
-
-float nova::PID::compute(float error) {
-    
-
-    
-    if (fabs(error) < maxCumulativeError) {
-        cumulativeError += error;
-    }
-
-    if (((error > 0 && prevError < 0) || (error < 0 && prevError > 0)) && !holdIntegralAtEnd) {
-        cumulativeError = 0;
-    }
-
-    output = kP * error + kI * cumulativeError + kD * (error - prevError);
-    prevError = error;
-
-    if (fabs(error) < minSettleError) {
-        timeSpentSettled += loopTime;
-    } else {
-        timeSpentSettled = 0;
-    }
-
-    timeSpentRunning += loopTime;
-
-    return output;
-    
-}
-
-bool nova::PID::isSettled() {
-    if (timeSpentRunning > timeout && timeout != 0) {
-        return true;
-    }
-
-    if (timeSpentSettled > minSettleTime) {
-        return true;
-    }
-
-    return false;
-}
-
-void nova::PID::resetSystem() {
-    cumulativeError = 0;
-    prevError = 0;
-    output = 0;
-    timeSpentSettled = 0;
-    timeSpentRunning = 0;
-}
-
-*/
