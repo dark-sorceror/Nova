@@ -20,6 +20,10 @@ void nova::Lift::liftDown() {
     nova::lift.move_absolute(-1800, 100);
 }
 
+void nova::Lift::autonStart() {
+    nova::lift.move_absolute(-400, 100);
+}
+
 void nova::Lift::run() {
     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
         nova::lift = 127;

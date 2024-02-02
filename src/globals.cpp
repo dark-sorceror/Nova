@@ -32,7 +32,8 @@ namespace nova {
 
     pros::ADIPotentiometer potentiometer ('B');
     pros::ADIDigitalOut leftWing ('A', LOW);
-    pros::ADIDigitalOut rightWing ('E', LOW);
+    pros::ADIDigitalOut rightWing ('H', LOW);
 
-    pros::Imu IMU (19);
+    pros::Imu IMU1 (19);
+    pros::Imu IMU2 (7);
 }

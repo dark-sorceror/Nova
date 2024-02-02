@@ -8,7 +8,7 @@
 #include "main.h"
 
 void nova::Intake::initialize() {
-    nova::intake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+    nova::intake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     nova::intake.tare_position();
 }
 

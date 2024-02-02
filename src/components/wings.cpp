@@ -13,7 +13,7 @@ void nova::Wings::open() {
     nova::leftWing.set_value(HIGH);
     nova::rightWing.set_value(HIGH);
 
-    // TODO: Amount of Air used
+    airRemaining -= 5;
 }
 
 void nova::Wings::openLeft() {
@@ -28,7 +28,7 @@ void nova::Wings::close() {
     nova::leftWing.set_value(LOW);
     nova::rightWing.set_value(LOW);
 
-    // TODO: Amount of Air used
+    airRemaining -= 5;
 }
 
 void nova::Wings::closeLeft() {
@@ -45,8 +45,7 @@ void nova::Wings::toggle() {
 }
 
 void nova::Wings::run() {
-    master.print(0, 0, "%i", airRemaining);
+    master.print(0, 0, "Air Remaining: %i", airRemaining);
     if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) this -> toggle();
-    // TODO: Amount of Air Left
 }
 

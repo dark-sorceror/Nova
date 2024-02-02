@@ -41,7 +41,6 @@ void autonSelectorUpdate() {
 }
 
 void initialize() {
-    wings.close();
     drive.initialize();
     lift.initialize();
     intake.initialize();
@@ -51,7 +50,7 @@ void initialize() {
 
     lcd::initialize();
     lcd::set_background_color(LV_COLOR_BLACK);
-	lcd::set_text_color(LV_COLOR_GREEN);
+	lcd::set_text_color(LV_COLOR_WHITE);
     lcd::print(0, "%s", nova::TEAM_NAME);
     lcd::print(1, "%s", nova::TEAM_NUMBER);
 }
@@ -59,7 +58,6 @@ void initialize() {
 void disabled() {}
 
 void competition_initialize() {
-    wings.close();
     drive.initialize();
     lift.initialize();
     intake.initialize();
@@ -69,7 +67,7 @@ void competition_initialize() {
 
     lcd::initialize();
     lcd::set_background_color(LV_COLOR_BLACK);
-	lcd::set_text_color(LV_COLOR_GREEN);
+	lcd::set_text_color(LV_COLOR_WHITE);
     lcd::print(0, "%s", nova::TEAM_NAME);
     lcd::print(1, "%s", nova::TEAM_NUMBER);
 

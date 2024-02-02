@@ -31,7 +31,8 @@ namespace nova {
     extern pros::Motor lift;
     extern pros::Motor flywheel;
     
-    extern pros::Imu IMU;
+    extern pros::Imu IMU1;
+    extern pros::Imu IMU2;
 
     extern pros::ADIPotentiometer potentiometer;
     extern pros::ADIDigitalOut leftWing;

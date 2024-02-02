@@ -12,6 +12,7 @@ namespace nova {
     class Drive {
         public:
             void initialize();
+            void autonInitialize();
             void resetMotorEncoders();
             void resetIMU();
             float getAvgEncoderValue();

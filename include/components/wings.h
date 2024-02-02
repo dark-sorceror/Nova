@@ -22,8 +22,7 @@ namespace nova {
             void run();
         private:
             void toggle();
-
-            int airRemaining;
+            
             bool wingsActive = false;
     };
 }

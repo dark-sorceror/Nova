@@ -18,6 +18,15 @@ void nova::Drive::initialize() {
     nova::backTopRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 }
 
+void nova::Drive::autonInitialize() {
+    nova::frontLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::backBottomLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::backTopLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::frontRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::backBottomRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    nova::backTopRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+}
+
 void nova::Drive::resetMotorEncoders() {
     nova::frontLeft.tare_position();
     nova::backBottomLeft.tare_position();
@@ -28,16 +37,11 @@ void nova::Drive::resetMotorEncoders() {
 }
 
 void nova::Drive::resetIMU() {
-    nova::IMU.reset();
+    nova::IMU1.reset();
+    nova::IMU2.reset();
 }
 
 float nova::Drive::getAvgEncoderValue() {
-    //lcd::print(5, "%f", nova::frontLeft.get_position());
-    //lcd::print(6, "%f", nova::backTopLeft.get_position());
-    //lcd::print(7, "%f", nova::backBottomLeft.get_position());
-    lcd::print(5, "%f", nova::frontRight.get_position());
-    lcd::print(6, "%f", nova::backTopRight.get_position());
-    lcd::print(7, "%f", nova::backBottomRight.get_position());
     return (nova::frontLeft.get_position() + nova::backBottomLeft.get_position() + nova::backTopLeft.get_position() + nova::frontRight.get_position() + nova::backBottomRight.get_position() + nova::backTopRight.get_position())/6;
 }
 
@@ -46,7 +50,7 @@ float nova::Drive::getAvgVelocity() {
 }
 
 double nova::Drive::getIMURotation() {
-    return nova::IMU.get_rotation();
+    return (nova::IMU1.get_rotation() + nova::IMU2.get_rotation()) / 2;
 }
 
 void nova::Drive::run() {
@@ -64,5 +68,6 @@ void nova::Drive::run() {
     nova::backBottomRight = y - x;
     nova::backTopRight = y - x;
 
-    //master.print(0, 0, "%f", IMU.get_rotation()); TESTING AUTON 
+    //master.print(0, 0, "%f", this->getIMURotation());
+    //master.print(0, 0, "%f", this->getAvgEncoderValue());
 }

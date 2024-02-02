@@ -14,6 +14,7 @@ namespace nova {
             void initialize();
             void liftUp();
             void liftDown();
+            void autonStart();
             void run();
         private:
             bool liftActive = false;

@@ -19,28 +19,6 @@ namespace nova {
     class Auton {
         public: 
             Auton(Drive drive, Intake intake, Lift lift, Flywheel flywheel, Wings wings);
-            
-            PID drivePID = PID(
-                0, 
-                1.5, 
-                0.0, 
-                8.5, 
-                250, 
-                50, 
-                175, 
-                5000
-            );
-
-            PID turnPID = PID(
-                0, 
-                4.0, 
-                0.0, 
-                28.0, 
-                100, 
-                5, 
-                75, 
-                3000
-            );
 
             float getAuton();
 
@@ -58,8 +36,12 @@ namespace nova {
 
             //void trackPosition(int left, int right);
             void translate(float dist);
+            void translateRotate(float dist, float angle);
+            void rotateTranslate(float angle, float dist);
             void rotate(float angle);
-            void swing(float angle);
+            void rotateAbsolute(float angle);
+            void swingLeft(float angle);
+            void swingRight(float angle);
     };
 }
 

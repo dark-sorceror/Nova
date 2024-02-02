@@ -6,6 +6,7 @@
  */ 
 
 #include "PID.hpp"
+#include "components/flywheel.h"
 #include "globals.h"
 #include "auton.h"
 #include "pros/rtos.hpp"
@@ -27,11 +28,124 @@ nova::Auton::Auton(Drive drive, Intake intake, Lift lift, Flywheel flywheel, Win
     wings(wings)
 {};
 
-float nova::Auton::getAuton() {
-    return nova::potentiometer.get_value();
+float nova::Auton::getAuton() { return nova::potentiometer.get_value(); }
+
+void nova::Auton::translateRotate(float dist, float angle) {
+    PID drivePID = PID(
+        0, 
+        1.5, 
+        0.0, 
+        8.5, 
+        250, 
+        50, 
+        0, 
+        5000
+    );
+
+    PID headingPID = PID(
+        0, 
+        0.1, 
+        0.0, 
+        1, 
+        100
+    );
+
+    this -> drive.resetMotorEncoders();
+
+    float targetPosition = dist * 46.28245103; // dist * 300/2pir
+    float targetAngle = drive.getIMURotation();
+    float timeSpentStalled = 0;
+    const float MIN_STALL_POWER = 30, MIN_STALL_VELOCITY = 4, MIN_STALL_TIME = 400;
+
+    while (!(drivePID.isSettled())) {
+         float driveError = targetPosition - this -> drive.getAvgEncoderValue();
+        float turnError = targetAngle - drive.getIMURotation();
+
+        float driveOutput = drivePID.compute(driveError);
+        float turnOutput = headingPID.compute(turnError);
+
+        float drivePower = driveOutput > 500 ? 500 : driveOutput;
+        float turnPower = turnOutput > 500 ? 500 : turnOutput;
+
+
+        nova::leftDrive = drivePower + turnPower;
+        nova::rightDrive = drivePower - turnPower;
+
+        pros::delay(10);
+
+        if (drivePower > MIN_STALL_POWER && this -> drive.getAvgVelocity() < MIN_STALL_VELOCITY) timeSpentStalled += 10;
+        else timeSpentStalled = 0;
+
+        if (timeSpentStalled > MIN_STALL_TIME) break;
+    }
+
+    drivePID.reset();
+    headingPID.reset();
+
+    PID turnPID = PID(
+        0, 
+        4.25, 
+        0.0, 
+        28.0, 
+        100,
+        5, 
+        250, 
+        3000
+    );
+
+    targetAngle = this -> drive.getIMURotation() + angle;
+
+    while (!(turnPID.isSettled())) {
+        float error = targetAngle - this -> drive.getIMURotation();
+        float power = turnPID.compute(error);
+
+        nova::leftDrive = power;
+        nova::rightDrive = -power;
+
+        pros::delay(10);
+    }
+
+    turnPID.reset();
+    nova::drive.brake();
 }
 
-void nova::Auton::translate(float dist) {
+void nova::Auton::rotateTranslate(float angle, float dist) {
+    PID turnPID = PID(
+        0, 
+        4.25, 
+        0.0, 
+        28.0, 
+        100, 
+        5, 
+        250, 
+        3000
+    );
+
+    float targetAngle = this -> drive.getIMURotation() + angle;
+
+    while (!(turnPID.isSettled())) {
+        float error = targetAngle - this -> drive.getIMURotation();
+        float power = turnPID.compute(error);
+
+        nova::leftDrive = power;
+        nova::rightDrive = -power;
+
+        pros::delay(10);
+    }
+
+    turnPID.reset();
+
+    PID drivePID = PID(
+        0, 
+        1.5, 
+        0.0, 
+        8.5, 
+        250, 
+        50, 
+        0, 
+        5000
+    );
+
     this -> drive.resetMotorEncoders();
 
     float targetPosition = dist * 46.28245103; // dist * 300/2pir
@@ -57,11 +171,91 @@ void nova::Auton::translate(float dist) {
         if (timeSpentStalled > MIN_STALL_TIME) break;
     }
 
-    nova::drive.brake();
     drivePID.reset();
+    nova::drive.brake();
 }
 
-void nova::Auton::swing(float angle) {
+void nova::Auton::translate(float dist) {
+    PID drivePID = PID(
+        0, 
+        1.5, 
+        0.0, 
+        8.5, 
+        250, 
+        50, 
+        250, 
+        5000
+    );
+
+    PID turnPID = PID(
+        0, 
+        0.1, 
+        0.0, 
+        1, 
+        100
+    );
+
+    this -> drive.resetMotorEncoders();
+
+    float targetPosition = dist * 46.28245103; // dist * 300/2pir
+    float targetAngle = drive.getIMURotation();
+    float timeSpentStalled = 0;
+    const float MIN_STALL_POWER = 30, MIN_STALL_VELOCITY = 4, MIN_STALL_TIME = 400;
+
+    while (!(drivePID.isSettled())) {
+        float driveError = targetPosition - this -> drive.getAvgEncoderValue();
+        float turnError = targetAngle - drive.getIMURotation();
+
+        float driveOutput = drivePID.compute(driveError);
+        float turnOutput = turnPID.compute(turnError);
+
+        float drivePower = driveOutput > 500 ? 500 : driveOutput;
+        float turnPower = turnOutput > 500 ? 500 : turnOutput;
+
+
+        nova::leftDrive = drivePower + turnPower;
+        nova::rightDrive = drivePower - turnPower;
+
+        pros::delay(10);
+
+        if (drivePower > MIN_STALL_POWER && this -> drive.getAvgVelocity() < MIN_STALL_VELOCITY) timeSpentStalled += 10;
+        else timeSpentStalled = 0;
+
+        if (timeSpentStalled > MIN_STALL_TIME) break;
+    }
+
+    drivePID.reset();
+    turnPID.reset();
+    nova::drive.brake();
+}
+
+void nova::Auton::swingLeft(float angle) {
+    PID swingPID = PID(
+        0, 
+        2.0, 
+        0.0, 
+        1.0, 
+        100, 
+        5, 
+        250, 
+        3000
+    );
+    
+    float targetPosition = this -> drive.getIMURotation() + angle;
+    while(!(swingPID.isSettled())){
+        float error = targetPosition - this -> drive.getIMURotation();
+        float drivePower = swingPID.compute(error);
+
+        nova::leftDrive = drivePower;
+        nova::rightDrive.brake();
+
+        pros::delay(10);
+    }
+    nova::drive.brake();
+    swingPID.reset();
+}
+
+void nova::Auton::swingRight(float angle) {
     PID swingPID = PID(
                 0, 
                 2.0, 
@@ -69,20 +263,17 @@ void nova::Auton::swing(float angle) {
                 1.0, 
                 100, 
                 5, 
-                75, 
+                250, 
                 3000
             );
+
+    float targetPosition = this -> drive.getIMURotation() + angle;
     while(!(swingPID.isSettled())){
-        float error = angle - this -> drive.getIMURotation();
+        float error = targetPosition - this -> drive.getIMURotation();
         float drivePower = swingPID.compute(error);
 
-        if (angle > 0) {
-            nova::leftDrive = drivePower;
-            nova::rightDrive.brake();
-        } else {
-            nova::rightDrive = drivePower;
-            nova::leftDrive.brake();
-        }
+        nova::rightDrive = -drivePower;
+        nova::leftDrive.brake();
 
         pros::delay(10);
     }
@@ -91,6 +282,17 @@ void nova::Auton::swing(float angle) {
 }
 
 void nova::Auton::rotate(float angle) {
+    PID turnPID = PID(
+        0, 
+        4.25, 
+        0.0, 
+        28.0, 
+        100, 
+        5, 
+        250, 
+        3000
+    );
+    
     float targetPosition = this -> drive.getIMURotation() + angle;
 
     while (!(turnPID.isSettled())) {
@@ -107,81 +309,164 @@ void nova::Auton::rotate(float angle) {
     turnPID.reset();
 }
 
+void nova::Auton::rotateAbsolute(float angle) {
+    PID turnPID = PID(
+        0, 
+        4.25, 
+        0.0, 
+        28.0, 
+        100, 
+        5, 
+        500, 
+        3000
+    );
+
+    while (!(turnPID.isSettled())) {
+        float error = angle - this -> drive.getIMURotation();
+        float power = turnPID.compute(error);
+
+        nova::leftDrive = power;
+        nova::rightDrive = -power;
+
+        pros::delay(10);
+    }
+
+    nova::drive.brake();
+    turnPID.reset();
+}
+
 void nova::Auton::farSideAWP() {
-    // Get tri-ball from corner out
+    // Start paralele the corner pole
+    // back against the glass
+    // place tri-ball corner closest to robot
+    lift.autonStart();
+    intake.spinRevolutions(-4);
+
     translate(17);
     wings.open();
     pros::delay(250);
-    translate(-7);
-    rotate(-45);
+    translateRotate(-7, -45);
 
     // Move to side of goal and score
     wings.close();
-    translate(-5);
-    rotate(45);
-    translate(20);
-    rotate(45);
+    translateRotate(-7, 45);
+    intake.spinRevolutions(3);
+    translateRotate(20, 45);
     translate(12);
     
     // Move to bar 
-    translate(-10);
-    wings.open();
-    rotate(-45);
-    translate(-28);
-    rotate(-45);
-    translate(-33);
+    translateRotate(-14, -45);
+    translateRotate(-28, -45);
+    pros::delay(500);
+    rotateAbsolute(-45);
+    translate(-29);
 }
 
-void nova::Auton::farSide() { // TODO
-    translate(10);
-    rotate(90);
+void nova::Auton::farSide() {
+    // Front matching the black pole (straight line)
+    // Facing the net
+    translate(-10);
+    translateRotate(30, 45);
+    translateRotate(33, 45);
+    translate(12);
+
+    translateRotate(-14, 75);
+    pros::delay(1000);
+    rotateAbsolute(165);
+    translate(-3);
     lift.liftUp();
-    pros::delay(2000);
-    flywheel.spinDuration(1);
 }
 
 void nova::Auton::closeSideAWP() {
-    // Move to goal and score matchloaded tri-ball
-    intake.spinRevolutions(-2);
-    this -> translate(5);
-    this -> translate(-45);
-    this -> rotate(-45);
-    this -> translate(-12);
-    wings.openLeft();
-    this -> rotate(-45);
-    this -> translate(-16);
-    this -> translate(6);
-    this -> rotate(180);
-    this -> translate(6);
-    this -> translate(-6);
-    
+    // start intake right above the tri-ball under the pole
 
-    /* old
-    translate(50);
-    rotate(90);
+    // Start Intake and Intake Tri-ball under Pole
+    wings.close();
+    lift.autonStart();
+    translate(3);
+    intake.spinRevolutions(-4);
+    pros::delay(500);
+
+    // Move To corner and get triball out
+    translateRotate(-35.5, -45);
+    wings.open();
+    pros::delay(250);
+    translateRotate(-15, -60);
+    wings.close();
+    rotateTranslate(60, -8);
+    swingLeft(-45);
+    translate(-5);
+    translate(5);
+    rotateAbsolute(-90);
+    
+    rotate(180);
+    intake.spinRevolutions(3);
+    translate(5);
+    translate(-5);
+
+    // Move to leftmost tri-ball
+    rotate(-75);
+
+    translate(52);
+    intake.spinRevolutions(-3);
+    pros::delay(250);
+
+    rotate(135);
+    intake.spinRevolutions(6);
+    translate(18);
+    pros::delay(250);
+    translate(-5);
+
+    rotateTranslate(-120, 24);
+    intake.spinRevolutions(-2);
+    pros::delay(250);
+    rotateAbsolute(-180);
+    intake.spinRevolutions(2);
+    pros::delay(250);
+    rotate(180);
+    wings.open();
+    translate(-20);
+    translate(2);
+
+    /*
+    // Turn and score intake tri-ball
+    
+    // Move into position and score two tri-ball
+    rotate(-46);
+    wings.open();
+    pros::delay(500);
+    rotateAbsolute(0);
+    translate(-31);
+    translate(6);
+    wings.close();
+
+    // Score intake tri-ball
+    rotate(180);
+    translate(6);
+    */
+}
+
+void nova::Auton::closeSide() {
+    //start with back against glass
+    //back left touching the glass connector
+    
+    lift.autonStart();
+    pros::delay(1000);
+    intake.spinRevolutions(-4);
+    translateRotate(55, 90);
     translate(14);
     
-
     // Get the leftmost tri-ball
-    translate(-10);
-    rotate(160);
+    translateRotate(-10, 160);
     intake.spinRevolutions(-3);
-    translate(25);
-
-    // Release the tri-ball
-    rotate(170);
+    pros::delay(250);
+    translateRotate(25, 170);
     translate(15);
     intake.spinRevolutions(1);
     pros::delay(250);
-    translate(-5);
-    
-    // Get the middle tri-ball
-    rotate(-110);
+    translateRotate(-5, -110);
     intake.spinRevolutions(-3);
-    translate(15);
-    
-    // Position into scoring and score bottom tri-ball and leftmost tri-ball
-    rotate(-55);
+    translateRotate(15, -55);
     wings.open();
     pros::delay(250);
     translate(-30);
@@ -191,73 +476,66 @@ void nova::Auton::closeSideAWP() {
     wings.close();
     rotate(180);
     intake.spinRevolutions(3);
+    pros::delay(250);
     translate(7);
-
-    // Move to pole
-    wings.open();
     translate(-10);
-    rotate(-45);
-    translate(-34);
-    rotate(35);
-    translate(-10);
-    */
-}
-
-void nova::Auton::closeSide() { // TODO
-    this -> translate(17);
-    wings.open();
-    pros::delay(250);
-    translate(-7);
-    rotate(-45);
-    pros::delay(250);
-    rotate(-45);
-    translate(-50);
-    rotate(45);
-    translate(-10);
-    wings.close();
-    translate(40);
-    translate(-5);
-    rotate(90);
-    translate(-48);
-    rotate(-90);
-    translate(-40);
 }
 
 void nova::Auton::skills() {
     // Score the two matchloads
-    this -> translate(-24);
-    this -> rotate(45);
-    this -> translate(-15);
+    translateRotate(-24, 45);
+    translate(-12);
 
     // Move into matchloading position
-    this -> translate(14);
-    this -> rotate(-105);
-    this -> translate(-3);
+    translateRotate(8, -120);
+    pros::delay(500);
+    rotateAbsolute(-75);
+    wings.openRight();
+    translate(-4);
 
     // Matchloading
-    lift.liftUp();
+    flywheel.spinDuration(2);
     pros::delay(2000);
-    lift.liftDown();
+    nova::flywheel.brake();
+    wings.closeRight();
 
-    // Move to the other side
-    this -> translate(3);
-    this -> rotate(-121);
-    this -> translate(-26);
-    this -> rotate(-45);
-    this -> translate(-90);
-    
-    // Score on the left side of goal
-    this -> rotate(-45);
-    this -> translate(-24);
-    this -> rotate(-45);
-    this -> translate(-10);
-
-    // Move to score position 1/3
-    this -> translate(7);
-    this -> rotate(-90);
-    this -> translate(-50);
-    this -> rotate(90);
-    this -> translate(-12);
+    translate(3);
+    rotate(30);
+    pros::delay(500);
+    rotateAbsolute(-45);
+    translateRotate(28, 90);
+    translateRotate(-70, 90);
     wings.open();
-    this -> rotate(60);
+    pros::delay(250);
+    translate(-20);
+    wings.close();
+
+    rotateAbsolute(135);
+
+    translateRotate(24, -90);
+    translateRotate(-24, 90);
+    translateRotate(-75, 45);
+    translateRotate(-20, 45);
+    translate(-10);
+    translate(10);
+    translate(-10);
+    translateRotate(10, 90);
+    pros::delay(500);
+    rotateAbsolute(-45);
+    translateRotate(-24, -90);
+    translateRotate(-40, -90);
+    wings.open();
+    pros::delay(250);
+    translate(-20);
+    translate(20);
+    translate(-20);
+    wings.close();
+    translateRotate(20, 90);
+    pros::delay(500);
+    rotateAbsolute(-225);
+    translateRotate(-20, -90);
+    wings.open();
+    pros::delay(250);
+    translate(-20);
+    
 }
