@@ -7,6 +7,8 @@
 
 #include "api.h"
 #include "globals.h"
+#include "pros/adi.hpp"
+#include "pros/rotation.hpp"
 
 namespace nova {
     const std::string TEAM_NAME = "Nova";
@@ -15,7 +17,7 @@ namespace nova {
     pros::Controller master(pros::E_CONTROLLER_MASTER);
 
     pros::Motor frontLeft (1, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
-    pros::Motor backBottomLeft (2, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
+    pros::Motor backBottomLeft (5, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
     pros::Motor backTopLeft (11, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
     pros::Motor frontRight (3, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
     pros::Motor backBottomRight (10, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
@@ -27,13 +29,14 @@ namespace nova {
     pros::Motor_Group drive ({frontLeft, backBottomLeft, backTopLeft, frontRight, backBottomRight, backTopRight});
 
     pros::Motor intake (6, pros::E_MOTOR_GEAR_GREEN, true, pros::E_MOTOR_ENCODER_COUNTS);
-    pros::Motor lift (16, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_COUNTS);
-    pros::Motor flywheel (8, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
+    pros::Motor flywheel (16, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
 
-    pros::ADIPotentiometer potentiometer ('B');
-    pros::ADIDigitalOut leftWing ('A', LOW);
-    pros::ADIDigitalOut rightWing ('H', LOW);
+    pros::ADIPotentiometer potentiometer ('E');
+    pros::ADIDigitalOut backWings ('A', LOW);
+    pros::ADIDigitalOut frontWings ('H', LOW);
 
-    pros::Imu IMU1 (19);
-    pros::Imu IMU2 (7);
+    pros::Rotation a (3);
+
+    pros::Imu IMU1 (9);
+    //pros::Imu IMU2 (7);
 }

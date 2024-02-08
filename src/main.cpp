@@ -9,11 +9,9 @@
 
 nova::Drive drive = nova::Drive();
 nova::Intake intake = nova::Intake();
-nova::Lift lift = nova::Lift();
 nova::Wings wings = nova::Wings();
 nova::Flywheel flywheel = nova::Flywheel();
-nova::Auton auton = nova::Auton(drive, intake, lift, flywheel, wings);
-//nova::Odometry odometry = nova::Odometry();
+nova::Auton auton = nova::Auton(drive, intake, flywheel, wings);
 
 std::map < std::pair < float, float >, std::string > autons = {
     {{0.0, 682.5}, "Nothing"},
@@ -42,7 +40,6 @@ void autonSelectorUpdate() {
 
 void initialize() {
     drive.initialize();
-    lift.initialize();
     intake.initialize();
 
     drive.resetIMU();
@@ -59,7 +56,6 @@ void disabled() {}
 
 void competition_initialize() {
     drive.initialize();
-    lift.initialize();
     intake.initialize();
 
     drive.resetIMU();
@@ -78,7 +74,7 @@ void competition_initialize() {
 
 void autonomous() {
     if (autonSelection == "Far Side AWP") auton.farSideAWP();
-    else if (autonSelection == "Far Side") auton.farSide();
+    else if (autonSelection == "Far Side") auton.farSideElims();
     else if (autonSelection == "Close Side AWP") auton.closeSideAWP();
     else if (autonSelection == "Close Side") auton.closeSide();
     else if (autonSelection == "Skills") auton.skills();
@@ -88,7 +84,6 @@ void opcontrol() {
 	while (1) {
 		drive.run();
         intake.run();
-        lift.run();
         wings.run();
         flywheel.run();
 

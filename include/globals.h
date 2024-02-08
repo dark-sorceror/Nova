@@ -9,6 +9,7 @@
 #define __GLOBALS
 
 #include "api.h"
+#include "pros/rotation.hpp"
 
 namespace nova {
     extern const std::string TEAM_NAME;
@@ -28,15 +29,16 @@ namespace nova {
     extern pros::Motor_Group drive;
 
     extern pros::Motor intake;
-    extern pros::Motor lift;
     extern pros::Motor flywheel;
+
+    extern pros::Rotation a;
     
     extern pros::Imu IMU1;
-    extern pros::Imu IMU2;
+    //extern pros::Imu IMU2;
 
     extern pros::ADIPotentiometer potentiometer;
-    extern pros::ADIDigitalOut leftWing;
-    extern pros::ADIDigitalOut rightWing;
+    extern pros::ADIDigitalOut frontWings;
+    extern pros::ADIDigitalOut backWings;
 }
 
 #endif

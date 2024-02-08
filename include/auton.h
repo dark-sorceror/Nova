@@ -10,38 +10,39 @@
 
 #include "components/drive.h"
 #include "components/intake.h"
-#include "components/lift.h"
 #include "components/flywheel.h"
 #include "components/wings.h"
 #include "PID.hpp"
+#include <iostream>
+#include <map>
+#include <list>
 
 namespace nova {
     class Auton {
         public: 
-            Auton(Drive drive, Intake intake, Lift lift, Flywheel flywheel, Wings wings);
+            Auton(Drive drive, Intake intake, Flywheel flywheel, Wings wings);
 
             float getAuton();
 
             void farSideAWP();
             void farSide();
+            void farSideElims();
             void closeSideAWP();
             void closeSide();
             void skills();
         private:
             Drive drive;
             Intake intake;
-            Lift lift;
             Flywheel flywheel;
             Wings wings;
 
             //void trackPosition(int left, int right);
             void translate(float dist);
-            void translateRotate(float dist, float angle);
-            void rotateTranslate(float angle, float dist);
+            void setPath(std::list < std::pair < std::string, float > > path);
             void rotate(float angle);
             void rotateAbsolute(float angle);
-            void swingLeft(float angle);
-            void swingRight(float angle);
+            void swerveLeft(float dist, float angle);
+            void swerveRight(float dist, float angle);
     };
 }
 

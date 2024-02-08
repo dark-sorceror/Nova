@@ -18,8 +18,8 @@ void nova::Intake::spinRevolutions(int revolutions) {
 }
 
 void nova::Intake::run() {
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) nova::intake = 127;
-    else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) nova::intake = -127;
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) nova::intake = 127;
+    else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) nova::intake = -127;
     else nova::intake = 0;
 }
 

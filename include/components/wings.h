@@ -12,18 +12,20 @@ namespace nova {
     class Wings {
         public:
             void open();
-            void openLeft();
-            void openRight();
+            void openFrontWings();
+            void openBackWings();
 
             void close();
-            void closeLeft();
-            void closeRight();
+            void closeFrontWings();
+            void closeBackWings();
 
             void run();
         private:
-            void toggle();
+            void toggleFrontWings();
+            void toggleBackWings();
             
-            bool wingsActive = false;
+            bool frontWingsActive = false;
+            bool backWingsActive = false;
     };
 }
 

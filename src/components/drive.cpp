@@ -18,15 +18,6 @@ void nova::Drive::initialize() {
     nova::backTopRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 }
 
-void nova::Drive::autonInitialize() {
-    nova::frontLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    nova::backBottomLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    nova::backTopLeft.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    nova::frontRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    nova::backBottomRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    nova::backTopRight.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-}
-
 void nova::Drive::resetMotorEncoders() {
     nova::frontLeft.tare_position();
     nova::backBottomLeft.tare_position();
@@ -38,7 +29,6 @@ void nova::Drive::resetMotorEncoders() {
 
 void nova::Drive::resetIMU() {
     nova::IMU1.reset();
-    nova::IMU2.reset();
 }
 
 float nova::Drive::getAvgEncoderValue() {
@@ -50,7 +40,7 @@ float nova::Drive::getAvgVelocity() {
 }
 
 double nova::Drive::getIMURotation() {
-    return (nova::IMU1.get_rotation() + nova::IMU2.get_rotation()) / 2;
+    return nova::IMU1.get_rotation();
 }
 
 void nova::Drive::run() {
@@ -68,6 +58,6 @@ void nova::Drive::run() {
     nova::backBottomRight = y - x;
     nova::backTopRight = y - x;
 
-    //master.print(0, 0, "%f", this->getIMURotation());
+    master.print(0, 0, "%f", this->getIMURotation());
     //master.print(0, 0, "%f", this->getAvgEncoderValue());
 }

@@ -20,6 +20,6 @@ void nova::Flywheel::spinDuration(int duration) { // seconds
 }
 
 void nova::Flywheel::run() {
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) nova::flywheel = 110;
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) nova::flywheel = 127;
     else nova::flywheel = 0;
 }

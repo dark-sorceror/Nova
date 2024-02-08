@@ -23,7 +23,6 @@
 #include "globals.h"
 #include "components/drive.h"
 #include "components/intake.h"
-#include "components/lift.h"
 #include "components/wings.h"
 #include "components/flywheel.h"
 #include "PID.hpp"
