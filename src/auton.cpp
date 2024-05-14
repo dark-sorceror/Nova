@@ -339,12 +339,11 @@ void nova::Auton::farSide() {
 }
 
 void nova::Auton::farSideElims() {
-    translate(3);
     wings.openFrontWings();
     pros::delay(500);
     wings.closeFrontWings();
     intake.spinRevolutions(-5);
-    translate(49);
+    translate(51);
     wings.openFrontWings();
     rotate(60);
     translate(20);
