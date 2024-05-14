@@ -32,20 +32,6 @@ nova::Auton::Auton(Drive drive, Intake intake, Flywheel flywheel, Wings wings):
 
 float nova::Auton::getAuton() { return nova::potentiometer.get_value(); }
 
-void nova::Auton::setPath(std::list < std::pair < std::string, float > > path) {
-    for (auto i : path) {
-        if (i.first ==  "T") translate(i.second);
-        else if (i.first == "R") rotate(i.second);
-        else if (i.first == "RA") rotateAbsolute(i.second); 
-        else if (i.first == "OB") wings.openBackWings(); 
-        else if (i.first == "CB") wings.closeBackWings(); 
-        else if (i.first == "OF") wings.openFrontWings(); 
-        else if (i.first == "CF") wings.closeFrontWings(); 
-        else if (i.first == "F") flywheel.spinDuration(i.second); 
-        else if (i.first == "I") intake.spinRevolutions(i.second); 
-        }
-}
-
 void nova::Auton::translate(float dist) {
     PID drivePID = PID(
         0, 
@@ -415,67 +401,6 @@ void nova::Auton::closeSide() {
 }
 
 void nova::Auton::skills() {
-    /*
-    translate(-25.04);
-    rotate(48.06);
-    translate(-12.74);
-    translate(15.09);
-    rotate(-120);
-    pros::delay(250);
-    wings.openBackWings();
-    translate(-3);
-
-    flywheel.spinDuration(2);
-    pros::delay(2000);
-    nova::flywheel.brake();
-    wings.closeBackWings();
-
-    rotateAbsolute(-45);
-    translate(15);
-    rotate(-90);
-    rotateAbsolute(-135);
-    swerveLeft(-12, -90);
-    translate(-81.14);
-    wings.openBackWings();
-    rotate(-45);
-    translate(-30.54);
-    wings.closeBackWings();
-    rotate(-48.76);
-    translate(-10.25);
-    translate(10);
-    translate(-10);
-
-    translate(3.38);
-    rotate(-90);
-    wings.openBackWings();
-    swerveRight(-50, 90);
-    swerveRight(-18, 90);
-    translate(-28.66);
-    translate(10);
-    translate(-10);
-    wings.closeBackWings();
-    rotateAbsolute(-225);
-    swerveLeft(3, 180);
-    wings.openBackWings();
-    swerveRight(-22, 90);
-    swerveLeft(-17.17, 90);
-    translate(-28.58);
-    translate(10);
-    translate(-10);
-    wings.closeBackWings();
-    swerveRight(28.64, -90);
-    wings.openBackWings();
-    swerveRight(-28, 90);
-    swerveLeft(-24, -90);
-    swerveRight(-16, 135);
-    translate(-12);
-    rotate(45);
-    translate(-12);
-    translate(10);
-    translate(-10);
-
-    */
-    
     translate(-25.04);
     rotate(48.06);
     translate(-12.74);
@@ -538,59 +463,4 @@ void nova::Auton::skills() {
     translate(-49.94);
     rotate(90);
     translate(5.20);
-    
-    /*
-    translate(-12);
-
-    setPath({{"T", 8}, {"R", -120}});
-    pros::delay(500);
-    rotateAbsolute(-75);
-    wings.openBackWings();
-    translate(-4);
-
-    flywheel.spinDuration(2);
-    pros::delay(2000);
-    nova::flywheel.brake();
-    wings.closeBackWings();
-
-    setPath({{"T", 3}, {"R", 30}});
-
-    pros::delay(500);
-    rotateAbsolute(-45);
-
-    translateRotate(28, 90);
-    translateRotate(-70, -90);
-    wings.openFrontWings();
-    pros::delay(250);
-    translate(20);
-    wings.closeFrontWings();
-
-    rotateAbsolute(135);
-
-    translateRotate(24, -90);
-    translateRotate(-24, 90);
-    translateRotate(-75, 45);
-    translateRotate(-20, 45);
-    push(-10);
-    translate(-10);
-    translateRotate(10, 90);
-    pros::delay(500);
-    rotateAbsolute(-45);
-    translateRotate(-24, -90);
-    translateRotate(-40, -90);
-    wings.openBackWings();
-    pros::delay(250);
-    translate(-20);
-    wings.closeBackWings();
-    push(20);
-    
-    wings.openBackWings();
-    translateRotate(20, 90);
-    pros::delay(500);
-    rotateAbsolute(-225);
-    translateRotate(-20, -90);
-    wings.openBackWings();
-    pros::delay(250);
-    translate(-20);
-    */
 }
