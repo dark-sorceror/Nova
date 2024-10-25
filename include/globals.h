@@ -15,30 +15,30 @@ namespace nova {
     extern const std::string TEAM_NAME;
     extern const std::string TEAM_NUMBER;
 
-    extern pros::Controller master;
+    extern pros::v5::Controller master;
 
-    extern pros::Motor frontLeft;
-    extern pros::Motor backBottomLeft;
-    extern pros::Motor backTopLeft;
-    extern pros::Motor frontRight;
-    extern pros::Motor backBottomRight;
-    extern pros::Motor backTopRight;
+    extern pros::v5::Motor frontLeft;
+    extern pros::v5::Motor backBottomLeft;
+    extern pros::v5::Motor backTopLeft;
+    extern pros::v5::Motor frontRight;
+    extern pros::v5::Motor backBottomRight;
+    extern pros::v5::Motor backTopRight;
 
-    extern pros::Motor_Group leftDrive;
-    extern pros::Motor_Group rightDrive;
-    extern pros::Motor_Group drive;
+    extern pros::v5::MotorGroup leftDrive;
+    extern pros::v5::MotorGroup rightDrive;
+    extern pros::v5::MotorGroup drive;
 
-    extern pros::Motor intake;
-    extern pros::Motor flywheel;
+    extern pros::v5::Motor intake;
+    extern pros::v5::Motor flywheel;
 
-    extern pros::Rotation a;
+    extern pros::v5::Rotation a;
     
-    extern pros::Imu IMU1;
+    extern pros::v5::Imu IMU1;
     //extern pros::Imu IMU2;
 
-    extern pros::ADIPotentiometer potentiometer;
-    extern pros::ADIDigitalOut frontWings;
-    extern pros::ADIDigitalOut backWings;
+    extern pros::adi::Potentiometer potentiometer;
+    extern pros::adi::DigitalOut frontWings;
+    extern pros::adi::AnalogOut backWings;
 }
 
 #endif
